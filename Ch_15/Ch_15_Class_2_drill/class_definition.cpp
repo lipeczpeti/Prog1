@@ -1,117 +1,86 @@
 #include "std_lib_facilities.h"
 
-using namespace std;
+const int min_ev = 1;
+const int max_ev = 150;
+
+void ev_ellenorzese(int age)
+{
+    if (age < min_ev or age >= 150) error("Nem elfogadható az év!");
+}
+
+void nev_ellenorzese(string name)
+{
+    for (int i = 0; i < name.length(); ++i)
+    {
+        if(!isalpha(name[i])) error("Nem elfogadható a név!"); 
+    }
+}
 
 struct Person
 {
-	private:
-	string first_name,last_name;
-	int age;
+private:
+    string ker_nev;
+    string vez_nev;
+    int ev;
 
-	public:
-	Person(){};
-	Person(string fn1, string ln2, int a)
-	{
-		first_name=fn1;
-		last_name=ln2;
-		age=a;
-	}
+public:
+	Person(string kn = "Goofy", string vn = "Mickey", int eves = 63) : ker_nev(kn), vez_nev(vn), ev(eves) 
+    {
+        ev_ellenorzese(ev);
+        nev_ellenorzese(ker_nev);
+        nev_ellenorzese(vez_nev);
+    }
 
-	//g
-	string get_first_name() const {return first_name;}
-	string get_last_name() const {return last_name;}
-	int get_age() const {return age;}
+	int get_ev() const { return ev; }
 
-	//s
-	void set_first_name(string n){first_name=n;}
-	void set_last_name(string n){last_name=n;}
-	void set_age(int a){age=a;}
+    string fullnev() const { return ker_nev + " " + vez_nev; }
+
+    void set_ker_nev(string ker_n) { ker_nev = ker_n; }
+    void set_vez_nev(string vez_n) { vez_nev = vez_n; }
+    void set_ev(int n ) { ev = n; }
 };
+	
+ostream& operator<<(ostream& os, const Person& p)
+{
+    return os << p.fullnev() << " " << p.get_ev() << endl;
+}
 
-	ostream& operator<< (ostream& os, Person& p)
-	{
-		os<<"Name: "<<p.get_first_name()<<" "<<p.get_last_name()<<" age: "<<p.get_age();
-		return os;
-	}
+istream& operator>>(istream& is, Person& p)
+{
+    string szoveg1, szoveg2;
+    int szam;
 
-	istream& operator>> (istream& is, Person& p)
-	{
-		string first,last;
-		int a;
-		is>>first>>last;
-
-		for(auto letter : first)
-		{
-			if(!isalpha(letter) && !isdigit(letter))
-			{
-				error("Not allowed character in first name");
-			}
-		}
-		p.set_first_name(first);
-
-		for(auto letter : last)
-		{
-			if(!isalpha(letter))
-			{
-				error("Not allowed character in last name");
-			}
-		}
-		p.set_last_name(last);
-
-		is>>a;
-
-		if(0<=a && a<=150)
-			{
-				p.set_age(a);
-			}
-		else
-		{
-			error("Invalid age!");
-		}
-		return is;
-	}
+    is >> szoveg1;
+    p.set_ker_nev(szoveg1);
+    for (int i = 0; i < szoveg1.size(); ++i) if (!isalpha(szoveg1[i])) error("Nem elfogadható a név!");
+    is >> szoveg2;
+    p.set_vez_nev(szoveg2);
+    for (int i = 0; i < szoveg2.size(); ++i) if (!isalpha(szoveg2[i])) error("Nem elfogadható a név!");
+    is >> szam;
+    p.set_ev(szam);
+    if (szam <= min_ev || szam > max_ev) error("Nem elfogadható az év!");
+    
+}
 
 int main()
 try{
-/*	Person p1;
-	p1.name="Goofy";
-	p1.age=63;
-	cout<<p1.name<<" "<<p1.age<<endl;
-	cout<<p1<<endl;
-*/
+    
+    vector<Person> emberek;
 
-	Person p2;
-
-	cout<<"Give name and age:"<<endl;
-	cin>>p2;
-	cout<<p2<<endl;
-
-/*	Person AllMight ("Yagi",55);
-	cout<<AllMight<<endl;
-*/
-	cout<<"Give names to the vector:"<<endl;
-
-	vector<Person> people;
-	Person temp;
-	int numOfPeople=0;
-	while(cin>>temp)
-	{
-		people.push_back(temp);
-		cout<<people[numOfPeople]<<endl;
-	}
-
+    cout << "Adj meg keresztnevet meg egy vezetéknevet és egy kort 2-szer" << endl;
+    for (int i = 0; i < 2; ++i)
+    {
+        Person var;
+    	cin >> var;
+    	emberek.push_back(var);
+    }
+    for (Person& ppl : emberek) cout << ppl;
 
 	return 0;
+} catch (exception& e){
+    cerr << e.what() << endl;
+    return 2;
+} catch (...){
+    cerr << "Something went wrong!" << endl;
+    return 3;
 }
-
-catch (exception& e) {
-	cerr << "Exception: " << e.what() << endl;
-	keep_window_open();
-	return 1;
-}
-catch(...){
-	cerr << "error";
-	keep_window_open();
-	return 2;
-}
-
