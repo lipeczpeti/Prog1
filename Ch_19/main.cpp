@@ -1,118 +1,65 @@
 #include "std_lib_facilities.h"
 
-using namespace std;
-
-template <typename T>
-struct S
-{
-    private:
+template<typename T>
+struct S {
+private:
     T val;
+public:
+    S(T vall = T()) : val(vall) {}
+    
+    T& get();
+    T get() const { return val; }
 
-    public:
-    explicit S(T v=0) : val{v} {};
-
-    const T& get();
-    S& operator= (const T& new_val);
-    void set(T vv);
-
+    T operator=(const T&);
 };
 
-template <typename T>
-const T& S<T>:: get()
-    {
-        return val;
-    }
-template <typename T>
-S<T>& S<T>::operator= (const T& new_val)
-{
-    val=new_val;
-    return *this;
-}
+template<typename T> T& S<T>::get() { return val; }
 
-template <typename T>
-void S<T>::set(T vv)
-{
-    val=vv;
-}
+template<typename T> T S<T>::operator=(const T& ujval) { val = ujval; } 
 
-
-template <typename T>
-void read_val(T& value)
-{
-    cin>>value;
-}
-
-template <typename T>
-ostream& operator<< (ostream& os, vector<T>& v)
-{
-    os<<"{";
-
-    for(auto lm : v)
-        os<<lm<<(lm==v[v.size()-1] ? "" : ", ");
-    os<<"}";
-
-    return os;
-}
-
-template <typename T>
-istream& operator>> (istream& is, vector<T>& v)
-{
-    char braces;
-    is>>braces;
-    if(braces!='{')
-        is.clear();
-    int val;
-    while(is>>val)
-    {
-        v.push_back(val);
-        is>>braces;
-        if(braces!=',')
-            break;
-    }
-
+template<typename T>
+istream& operator>>(istream& is, S<T>& tt){
+    is >> tt.get();
     return is;
 }
 
-
+template<typename T> void read_val(T& v) { cin >> v; }
 
 int main()
-{
-    S<int> sint (12);
-    int i;
-    cout<<"Add an integer: "<<endl;
-    read_val(i);
-    sint=i;
+try {
+    S<int> szam {50};
+    S<char> betu {'q'};
+    S<double> nemegesz {123.456};
+    S<string> szoveg {"Szöveg"};
+    S<vector<int>> vektor { {1, 2, 3, 4, 5, 6, 7, 8, 9, 10} };
 
-    S<char> schar ('a');
-    char c;
-    cout<<"Add a char: "<<endl;
-    read_val(c);
-    schar=c;
-    schar.set(c);
+    cout << szam.get() << " " << betu.get() << " " << nemegesz.get() << " " << szoveg.get() << endl; 
+    vector<int> feltoltesvektor = vektor.get();
+    for (auto v : feltoltesvektor) cout << v << " ";
+    cout << "\n\n";
 
-    S<double> sdouble (3.18234);
-    double d;
-    cout<<"Add a double: "<<endl;
-    read_val(d);
-    sdouble=d;
+    S<int> masik {25};
+    cout << "Szám: " << szam.get() << endl;
+    szam = masik; 
+    cout << "Új szám: " << szam.get() << endl;
 
-    S<string> sstring ("I lovin it");
-    string s;
-    cout<<"Add string: "<<endl;
-    read_val(s);
-    sstring=s;
-
-    S<vector<int>> svector (vector<int> {0, 1, 2, 3, 4});
-
-    cout<<"int: "<<sint.get()<<"\n"
-        <<"char: "<<schar.get()<<"\n"
-        <<"double: "<<sdouble.get()<<"\n"
-        <<"string: "<<sstring.get()<<"\n";
-
-    cout<<"Vector<int> {val, val, val}"<<endl;
-    vector<int> test;
-    read_val(test);
-    cout<<test;
+    S<int> sajatszam;
+    S<double> sajatnemegesz;
+    S<string> sajatszoveg;
+    S<char> sajatkarakter;
+    cout << "Adj meg egy számot, nem egész számot, szöveget és egy karaktert!\n";
+    read_val(sajatszam); read_val(sajatnemegesz); read_val(sajatszoveg); read_val(sajatkarakter);
+    cout <<
+        "Számod: "<< sajatszam.get() <<
+        ", nem egész számod: " << sajatnemegesz.get() <<
+        ", szöveged: " << sajatszoveg.get() <<
+        ", karaktered: " << sajatkarakter.get() << endl;
 
     return 0;
+} catch (exception& e) {
+    cerr << e.what() << endl;
+    return 1;
+} catch (...) {
+    cerr << "problémák!" << endl;
+    return 2;
 }
